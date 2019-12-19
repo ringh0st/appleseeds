@@ -1,0 +1,31 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+}
+.navbar{
+    background-color: #c0c0c0;
+    display: flex;
+}
+.navbutton{
+    background-color: #c0c0c0;
+    font-family: sans-serif;
+
+
+}
+.navbutton:hover{
+    border: 1px grey solid;
+    box-shadow: 2px 2px 0 0 black;
+
+}
+.nav-left{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    flex-flow: column;
+    background-color: #c0c0c0;
+    font-family: sans-serif;
+    width: 10px;
+}
+.page-coloring{
+   width: 600px; 
+}
