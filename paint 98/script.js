@@ -10,6 +10,8 @@ function onMouseUpdate(e) {
   y = e.pageY;
 
   console.log(x, y);
+  console.log(s);
+  
 
 }
 
