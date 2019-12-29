@@ -1,28 +1,108 @@
-var imagesArray = ['./cards/card_00001.jpg','./cards/card_00001.jpg','./cards/card_00013.jpg','./cards/card_00013.jpg','./cards/card_00028.jpg','./cards/card_00028.jpg','./cards/card_00019.jpg','./cards/card_00019.jpg','./cards/card_00005.jpg','./cards/card_00005.jpg','./cards/card_00006.jpg','./cards/card_00006.jpg','./cards/card_00008.jpg','./cards/card_00008.jpg','./cards/card_00014.jpg','./cards/card_00014.jpg','./cards/card_00015.jpg','./cards/card_00015.jpg','./cards/card_00016.jpg','./cards/card_00016.jpg','./cards/card_00035.jpg','./cards/card_00035.jpg','./cards/card_00018.jpg','./cards/card_00018.jpg'];
-function shuffle() {
-  imagesArray.sort(() => Math.random() - 0.5);
+let imagesArray = [];
+let tileArray = [];
+let tileFlippedOver = [];
+let cardFlipped = -1;
+let timer = '';
+let playLockout = false;
+let gamePlay = false; 
+let startButton = document.getElementById('start');
+let gameBoard = document.getElementById('gameboard');
+let message = document.getElementById('message');
+
+startButton.addEventListener('click', startGame);
+
+function startGame() {
+  cardFlipped = -1;
+  playLockout = false;
+  startButton.style.display = 'none';
+  if (!gamePlay) {
+    gamePlay = true;
+    buildArray();
+    tileArray = imagesArray.concat(imagesArray);
+    shuffleArray(tileArray);
+    buildBoard();
+    message.innerHTML = "click a card";
+  }
 }
-shuffle(imagesArray);
-// const backCard = ("./cards/card_00082.jpg")
 
-// const cardBackground = document.createElement("img");
-// cardBackground.src = backCard;
-// cardBackground.style.width = "160px"
-// cardBackground.style.margin = "9px"
-
-for (let index = 0; index < imagesArray.length; index++) {
-  console.log(index);
-  const newImage = document.createElement("img");
-  newImage.classList.add(`frontcard-${index}`);
-  newImage.src = imagesArray[index];
-  document.querySelector("#container").appendChild(newImage);
-  newImage.style.width = "160px"
-  newImage.style.margin = "9px"
-  newImage.style.boxShadow = "0 4px 8px 0 rgba(0, 0, 0, 0.30), 0 6px 20px 0 rgba(0, 0, 0, 0.55)";
-
+function buildArray() {
+  for (var x = 1; x < 13; x++) {
+    imagesArray.push(x + '.jpg');
+  }
 }
-function startGame(){
-  shuffle(imagesArray);
-	imagesArray.hide();
+function buildBoard() {
+  var html = "";
+  for (var x = 0; x <= (tileArray.length - 1); x++) {
+    html += '<div class="gameTile"><div class="gameTile">';
+    html += '<img id="cards' + x + '" src="./cards/82.jpg" onclick="pickCard(' + x + ',this)" class="flipImage"></div></div>';
+  }
+  gameBoard.innerHTML = html;
+}
 
+function pickCard(tileIndex, t) {
+  if (!isinArray(t.id, tileFlippedOver) && !playLockout) {
+    if (cardFlipped >= 0) {
+      cardFlip(t, tileIndex);
+      playLockout = true;
+      if (checkSrc(tileFlippedOver[tileFlippedOver.length - 1]) == checkSrc(tileFlippedOver[tileFlippedOver.length - 2])) {
+        message.innerHTML = "Match Found";
+        playLockout = false;
+        cardFlipped = -1;
+        if (tileFlippedOver.length == tileArray.length) {
+          gameover();
+        }
+      } else {
+        message.innerHTML = "No Match";
+        timer = setInterval(hideCard, 1000);
+      }
+    } else {
+      cardFlipped = tileIndex;
+      cardFlip(t, tileIndex);
+    }
+  } else {
+    message.innerHTML = "try again";
+  }
+}
+
+function hideCard() {
+  for (let x = 0; x < 2; x++) {
+    let vid = tileFlippedOver.pop();
+    document.getElementById(vid).src = "./cards/82.jpg";
+  }
+  clearInterval(timer);
+  playLockout = false;
+  cardFlipped = -1;
+  message.innerHTML = "Click a card";
+}
+
+function gameover() {
+  startButton.style.display = 'block';
+  message.innerHTML = "new game";
+  gamePlay = false;
+  imagesArray = [];
+  tileFlippedOver = [];
+}
+
+function isinArray(v, array) {
+  return array.indexOf(v) > -1;
+}
+
+function cardFlip(t, ti) {
+  t.src = "./cards/" + tileArray[ti];
+  tileFlippedOver.push(t.id);
+}
+
+function checkSrc(v) {
+  var v = document.getElementById(v).src;
+  return v;
+}
+
+function shuffleArray(array) {
+  for (var x = array.length - 1; x > 0; x--) {
+    const holder = Math.floor(Math.random() * (x + 1));
+    const itemValue = array[x];
+    array[x] = array[holder];
+    array[holder] = itemValue;
+  }
+  return array;
 }
